@@ -5,6 +5,7 @@ Description
 The project implements a PMT counter by using an Opal Kelly XEM7305 FPGA board.
 
 File						Description
+
 PMTCounter_GUI.py			python program of the GUI for the counter
 XEM7305_photon_counter.py	python module of the counter
 photon_counter_gui.bit		compiled firmware for the counter
