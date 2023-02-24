@@ -14,14 +14,14 @@ photon_counter.bit			compiled firmware for testing the proto-type
 ok*							Opal Kelly API files for python3.7
 firmware/*					firmware source codes
 
-===========
+
 Requirments
 -----------
 Python3.7 or later
 PyQt5
 pyqtgraph
 
-=====
+
 Usage
 -----
 python PMTCounter_GUI.py
