@@ -35,3 +35,25 @@ pyqtgraph
 Usage
 -----
 python PMTCounter_GUI.py
+
+Note for Linux usage
+-----
+First running attempt failed. Error: No module named '_ok'
+It turns out the ok.pyd file is for windows and one need ok.so for linux.
+
+One can 
+download FrontPanel-Ubuntu20.04LTS-x64-5.2.11.tgz from
+https://office365oist.sharepoint.com/sites/OISTEQuIPUnit 
+
+Then replace the files ok.py and _ok.pyd in the cloned github files with ok.py and _ok.so from the sharepoint folder. 
+
+Note on pyqt
+-----
+
+One may get an error if using pyqtgraph 0.11.1
+versions 0.12 and above should work. 
+It sufficed to update pyqt to the latest version (5.15.x)
+
+
+
+
