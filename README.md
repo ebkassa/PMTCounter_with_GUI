@@ -11,7 +11,7 @@ photon_counter_gui.bit		compiled firmware for the counter
 realtime_monitor_*.py		python program for testing the proto-type
 photon_counter_sample.py	python program for testing the proto-type
 photon_counter.bit			compiled firmware for testing the proto-type
-ok*							Opal Kelly API files for python3.7
+ok*, _ok*					Opal Kelly API files for python3.7 (for Windows)
 firmware/*					firmware source codes
 
 ===========
@@ -19,7 +19,7 @@ Requirments
 -----------
 Python3.7 or later
 PyQt5
-pyqtgraph
+pyqtgraph 0.12 or later
 
 =====
 Usage

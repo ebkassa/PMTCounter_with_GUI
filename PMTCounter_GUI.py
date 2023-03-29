@@ -106,7 +106,7 @@ class GraphPMT(PlotWidget):
             interval = 0
         if (DEBUG == True):
             print("Timer interval", interval)
-        self.timer.setInterval(interval)
+        self.timer.setInterval(int(interval))
         self.timer.timeout.connect(lambda: self.update_plot(dev=dev, countingType=countingType, pipeOutLen=pipeOutLen, lockincompen=lockincompen, lockinupr=lockinupr, lockindownr=lockindownr, lockinupperiod= lockinupperiod, lockindownperiod= lockindownperiod, initwithfirstin=initwithfirstin))
         self.timer.start()
 
