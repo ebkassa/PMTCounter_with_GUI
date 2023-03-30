@@ -33,16 +33,17 @@ module photon_cnt_output#(parameter COUNTSIZE = 32)
   input c_lockin_compensate,
   input c_ch1,
   output reg c_cnt_ready,
-  output reg[ COUNTSIZE-1 : 0 ] c_ch1_cnt_output,
+  output reg[ 2*COUNTSIZE-1 : 0 ] c_ch1_cnt_output,
   output wire c_lockin_inc // flag: increase or decrease the counter.
     );
     
 reg [ COUNTSIZE-1 : 0 ] c_clk_cnt;
 wire [ COUNTSIZE-1 : 0 ] c_ch1_cnt;
+wire [ COUNTSIZE-1 : 0 ] c_ch1_cnt_lck;
 
 photon_counter #(COUNTSIZE) photon_counter(.c_rst(c_rst), .c_clk(c_clk), .c_lockin(c_lockin),
     .c_lockinup_period(c_lockinup_period), .c_lockindown_period(c_lockindown_period), 
-    .c_ch1(c_ch1), .c_ch1_cnt(c_ch1_cnt), .c_lockin_inc(c_lockin_inc),
+    .c_ch1(c_ch1), .c_ch1_cnt(c_ch1_cnt), .c_ch1_cnt_lck(c_ch1_cnt_lck), .c_lockin_inc(c_lockin_inc),
     .c_lockinup_rate(c_lockinup_rate), .c_lockindown_rate(c_lockindown_rate), .c_lockin_compensate(c_lockin_compensate));
     
 always @ (posedge c_rst, posedge c_clk) begin
@@ -54,7 +55,7 @@ always @ (posedge c_rst, posedge c_clk) begin
   else begin
     c_clk_cnt <= c_clk_cnt + 1;
     if (c_clk_cnt == c_count_period) begin 
-      c_ch1_cnt_output <= c_ch1_cnt;
+      c_ch1_cnt_output <= {c_ch1_cnt, c_ch1_cnt_lck};
       c_cnt_ready <= 1;
       c_clk_cnt <= 1;  //start next counting period.
     end 
