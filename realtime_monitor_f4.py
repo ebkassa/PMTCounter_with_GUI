@@ -15,7 +15,7 @@ Just run this file will get the real time monitoring to "differentiate lock-in c
 
 # %% for the wavemeter
 
-
+import time
 import socket
 import pickle
 
@@ -47,7 +47,6 @@ ti = time.perf_counter()
 
 # %% Functions
 
-import time
 import matplotlib.pyplot as plt
 import XEM7305_photon_counter
 
@@ -133,13 +132,15 @@ def get_wavelength():
     return wvl
 
 
-def measure_and_plot():
+def measure_and_plot(k):
     signal = get_signal()
     wvl = get_wavelength()
 
     signal_list.append(signal)
     wvl_list.append(wvl)
     plt.scatter(wvl, signal)
+
+    print(f"{k}/{NUM_FRAMES}")
 
 
 # %% Acquisiton
