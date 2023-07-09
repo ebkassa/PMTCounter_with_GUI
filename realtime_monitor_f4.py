@@ -138,7 +138,7 @@ def measure_and_plot(k):
 
     signal_list.append(signal)
     wvl_list.append(wvl)
-    plt.scatter(wvl, signal)
+    plt.scatter(wvl, signal, color="k")
 
     print(f"{k+1}/{NUM_FRAMES}")
 
