@@ -11,6 +11,8 @@ import sys
 import time
 import XEM7305_photon_counter_V2
 import random
+import numpy as np
+import pyqtgraph as pg
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, 
@@ -20,7 +22,6 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox,
 
 
 from pyqtgraph import PlotWidget
-import pyqtgraph as pg
 
 # const
 BYTES_PER_COUNT = 4
@@ -47,12 +48,24 @@ class GraphPMT(PlotWidget):
         self.x_inc = x_inc
         self.xdata = [float((i+1-self.n_frame)*self.x_inc) for i in range(self.n_frame)] #initial x from negtive to 0
         self.x_new = 1 * self.x_inc # the new x value when frame updated
-        self.ydata = [0.0 for _ in range(self.n_frame)] # initial to 0s
+        self.ydata = [np.nan for _ in range(self.n_frame)] # initial to 0s
         
         self.setBackground('w')
         self.pen = pg.mkPen('b', width=1)
         
         self.plot_ref = self.plot(self.xdata, self.ydata, pen=self.pen) 
+        # horizontal lines
+        self.ave_all = pg.InfiniteLine(pos=0, angle=0, pen='g', movable=False)
+        self.ave_5 = pg.InfiniteLine(pos=0, angle=0, pen='r', movable=False)
+        self.addItem(self.ave_all, ignoreBounds=True)
+        self.addItem(self.ave_5, ignoreBounds=True)
+
+        # legends
+        legend = pg.LegendItem()
+        legend.setParentItem(self.graphicsItem())
+        legend.anchor(itemPos=(1, 0), parentPos=(1, 0), offset=(-10, 10))
+        legend.addItem(pg.PlotDataItem(pen=self.ave_all.pen), 'Average all')
+        legend.addItem(pg.PlotDataItem(pen=self.ave_5.pen), 'Average recent 5%')
         
     def init_plot(self, countingType=0, updateInterval=100, n_frame=101):
         """ Using the real parameters to initiate the graph. Unit of updateInterval: ms."""
@@ -125,6 +138,10 @@ class GraphPMT(PlotWidget):
         self.x_new = self.x_new + self.x_inc # the new x value when frame updated
         self.setXRange(self.xdata[0], self.xdata[self.n_frame-1], padding=0)
         self.plot_ref.setData(self.xdata, self.ydata)
+
+        self.ave_all.setValue(np.mean(self.ydata))
+        self.ave_5.setValue(np.mean(self.ydata[-len(self.ydata)//20:]))
+        print(self.ydata)
         
 class PMTCounter():
     """ 
@@ -500,7 +517,7 @@ class MainWindow(QMainWindow):
         group.addLayout(rowGNumPoint)
         
         self.ckbGInitWithFirstInput = QCheckBox("Using first value to initiate previous (blank) points ")
-        self.ckbGInitWithFirstInput.setChecked(True)
+        self.ckbGInitWithFirstInput.setChecked(False)
         
         group.addSpacing(6)
         group.addWidget(self.ckbGInitWithFirstInput)

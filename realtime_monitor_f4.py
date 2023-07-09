@@ -58,7 +58,7 @@ dev.lockin_down_period = 1e5 * 512
 
 PIPEOUT_SIZE = 1024  # const
 NUM_FRAMES = (
-    10  # total measuring time equals to NUM_FRAMES * PIPEOUT_SIZE * counting_period
+    1000  # total measuring time equals to NUM_FRAMES * PIPEOUT_SIZE * counting_period
 )
 
 buff = [bytearray(4 * PIPEOUT_SIZE) for _ in range(2)]
@@ -140,7 +140,7 @@ def measure_and_plot(k):
     wvl_list.append(wvl)
     plt.scatter(wvl, signal)
 
-    print(f"{k}/{NUM_FRAMES}")
+    print(f"{k+1}/{NUM_FRAMES}")
 
 
 # %% Acquisiton
