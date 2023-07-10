@@ -52,7 +52,7 @@ assign g_rst_fifo = ep00wire[1]; //FIFO reset signal receive from PC. After FIFO
 assign m_rst = ep00wire[2]; //Reset for MUX to output TTL.
 
 // Photon Counter 
-wire [ COUNTSIZE-1 : 0 ] c_ch1_cnt_output;
+wire [ 2*COUNTSIZE-1 : 0 ] c_ch1_cnt_output;
 wire c_cnt_ready, c_lockin_inc;
 reg [ COUNTSIZE-1 : 0 ]  c_count_period, c_lockinup_period, c_lockindown_period;
 reg [ 6 : 0 ]  c_lockinup_rate, c_lockindown_rate; //the rates are in range 1~99. 7 bit is enough. 
@@ -90,7 +90,7 @@ assign lockin_inc = c_TTL_type == 0 ? 1 : (c_TTL_type == 2 ? 0 : lockin_inc_tmp)
 
 // CDC 
 wire c_cnt_ready_c2g, g_cnt_ready;
-wire [ COUNTSIZE-1 : 0 ]  c_ch1_cnt_output_c2g, g_sync2_ch1_cnt_output;
+wire [ 2*COUNTSIZE-1 : 0 ]  c_ch1_cnt_output_c2g, g_sync2_ch1_cnt_output;
 cdc_c2g #(DATASIZE, COUNTSIZE) cdc_c2g(.c_clk(c_clk), .c_rst(c_rst),  
     .c_detect(c_cnt_ready), .c_diff_count(c_ch1_cnt_output),
     .c_detect_c2g(c_cnt_ready_c2g), .c_diff_count_c2g(c_ch1_cnt_output_c2g));
@@ -100,15 +100,15 @@ cdc_g2ram #(DATASIZE, COUNTSIZE) cdc_g2ram(.g_clk(g_clk), .g_rst(g_rst),
 
 // FIFO 
 wire g_fifofull, g_fifoempty, g_good_to_wr, g_good_to_rd;
-wire [12:0] g_fifodatacount;
+wire [12:0] g_fifodatacount_w, g_fifodatacount_r;
 wire [ COUNTSIZE-1 : 0 ] g_fifo_out;
 //assign g_good_to_wr = (g_fifodatacount < 8192-1028); // HARD CODING 
-assign g_good_to_wr = (g_fifodatacount < 8192-16); // HARD CODING 
+assign g_good_to_wr = (g_fifodatacount_w < 8192-8); // HARD CODING 
 //assign g_good_to_rd = (g_fifodatacount > 1028); // HARD CODING 
-assign g_good_to_rd = (g_fifodatacount > 16); // HARD CODING 
+assign g_good_to_rd = (g_fifodatacount_r > 16); // HARD CODING 
 reg g_wren; // For FIFO write 
 reg g_pipeO_ready; // For FIFO read 
-reg [ COUNTSIZE-1 : 0 ] g_reg_fifo_in;
+reg [ 2*COUNTSIZE-1 : 0 ] g_reg_fifo_in;
 always @ (posedge g_clk, posedge g_rst_fifo) begin
   if (g_rst_fifo) begin
     g_wren <= 0;
@@ -129,7 +129,7 @@ end
 //wire g_piperead;
 fifo_generator_0 fifo(.clk(g_clk), .srst(g_rst_fifo), 
     .din(g_reg_fifo_in), .wr_en(g_wren), .rd_en(g_piperead), .dout(g_fifo_out),
-    .full(g_fifofull), .empty(g_fifoempty), .data_count(g_fifodatacount));
+    .full(g_fifofull), .empty(g_fifoempty), .wr_data_count(g_fifodatacount), .rd_data_count(g_fifodatacount_r));
     
 // okHost  
 okHost okHI(.okUH(okUH), .okHU(okHU), .okUHU(okUHU),

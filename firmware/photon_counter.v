@@ -33,6 +33,7 @@ module photon_counter #(parameter COUNTSIZE = 32)
   input c_lockin_compensate,
   input c_ch1,
   output reg[ COUNTSIZE-1 : 0 ] c_ch1_cnt,
+  output reg[ COUNTSIZE-1 : 0 ] c_ch1_cnt_lck,
   output reg c_lockin_inc // flag: increase or decrease the counter.
     );
 
@@ -47,28 +48,30 @@ reg [ COUNTSIZE-1 : 0 ] c_clk_cnt;
 always @ (posedge c_rst, posedge c_clk) begin
   if (c_rst) begin
     c_ch1_cnt <= 0;
+    c_ch1_cnt_lck <= 0;
     c_clk_cnt <= 0;
     c_lockin_inc <= 1;
   end
   else begin
-    if (!c_lockin) begin //not lock-in
-      if (c_ch1_pos_edge) c_ch1_cnt <= c_ch1_cnt + 1;
+    //Create the flag c_lockin_inc: 1 for increase counting, 0 for decreass counting
+    c_clk_cnt <= c_clk_cnt + 1;
+    if (c_lockin_inc == 1 && c_clk_cnt == c_lockinup_period) begin //toggle from increase to decrese.
+      c_clk_cnt <= 1; //start next lock-in period
+      c_lockin_inc <= 0;
     end
-    else begin //lock-in
-      c_clk_cnt <= c_clk_cnt + 1;
-      if (c_lockin_inc == 1 && c_clk_cnt == c_lockinup_period) begin //toggle from increase to decrese.
-        c_clk_cnt <= 1; //start next lock-in period
-        c_lockin_inc <= 0;
-      end
-      else if (c_lockin_inc == 0 && c_clk_cnt == c_lockindown_period) begin //toggle from decrese to increase.
-        c_clk_cnt <= 1; //start next lock-in period
-        c_lockin_inc <= 1;
-      end  
-      if (c_ch1_pos_edge) begin
-        if(c_lockin_inc == 1) c_ch1_cnt <= c_ch1_cnt + up_inc;
-        else c_ch1_cnt <= c_ch1_cnt - down_inc; 
-      end
+    else if (c_lockin_inc == 0 && c_clk_cnt == c_lockindown_period) begin //toggle from decrese to increase.
+      c_clk_cnt <= 1; //start next lock-in period
+      c_lockin_inc <= 1;
     end
+    
+    // counting
+    if (c_ch1_pos_edge) begin
+      //normal counting
+      c_ch1_cnt <= c_ch1_cnt + 1; 
+      //lock-in counting 
+      if(c_lockin_inc == 1) c_ch1_cnt_lck <= c_ch1_cnt_lck + up_inc;
+      else c_ch1_cnt_lck <= c_ch1_cnt_lck - down_inc;   
+    end    
   end 
 end 
 endmodule

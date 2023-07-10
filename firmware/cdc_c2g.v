@@ -30,10 +30,10 @@ module cdc_c2g #(parameter DATASIZE = 16, COUNTSIZE = 32)
   input c_rst,
   input c_detect,
   input [ DATASIZE-1 : 0 ] c_diff,
-  input [ COUNTSIZE-1 : 0 ] c_diff_count,
+  input [ 2*COUNTSIZE-1 : 0 ] c_diff_count,
   output reg c_detect_c2g,
   output reg [ DATASIZE-1 : 0 ] c_diff_c2g,
-  output reg [ COUNTSIZE-1 : 0 ] c_diff_count_c2g
+  output reg [ 2*COUNTSIZE-1 : 0 ] c_diff_count_c2g
     );
 
 localparam WAIT = 2'd0,
@@ -48,9 +48,9 @@ reg [2:0] c_hold_cnt; // attention: hold for 7 clocks. HARD CODING! (460MHz to 1
 
 always @(posedge c_clk, posedge c_rst) begin
   if (c_rst) begin
-    c_detect_c2g <= 1'b0;
-    c_diff_c2g <= 16'd0;
-    c_diff_count_c2g <= 32'd0;
+    c_detect_c2g <= 0;
+    c_diff_c2g <= 0;
+    c_diff_count_c2g <= 0;
     c_state <= WAIT;
     c_hold_cnt <= 0;
   end 
